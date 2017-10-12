@@ -8,7 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		16C455B51F8F9D8D009C8984 /* LKMessageSwitchPod.m in Sources */ = {isa = PBXBuildFile; fileRef = 16C455B41F8F9D8D009C8984 /* LKMessageSwitchPod.m */; };
-		16C455B71F8F9D8D009C8984 /* LKMessageSwitchPod.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 16C455B61F8F9D8D009C8984 /* LKMessageSwitchPod.podspec */; };
 		16C455BE1F8F9D8D009C8984 /* LKMessageSwitchPod.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 16C455B01F8F9D8D009C8984 /* LKMessageSwitchPod.framework */; };
 		16C455C31F8F9D8D009C8984 /* LKMessageSwitchPodTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 16C455C21F8F9D8D009C8984 /* LKMessageSwitchPodTests.m */; };
 		16C455C51F8F9D8D009C8984 /* LKMessageSwitchPod.h in Headers */ = {isa = PBXBuildFile; fileRef = 16C455B31F8F9D8D009C8984 /* LKMessageSwitchPod.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -28,11 +27,12 @@
 		16C455B01F8F9D8D009C8984 /* LKMessageSwitchPod.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = LKMessageSwitchPod.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		16C455B31F8F9D8D009C8984 /* LKMessageSwitchPod.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = LKMessageSwitchPod.h; sourceTree = "<group>"; };
 		16C455B41F8F9D8D009C8984 /* LKMessageSwitchPod.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LKMessageSwitchPod.m; sourceTree = "<group>"; };
-		16C455B61F8F9D8D009C8984 /* LKMessageSwitchPod.podspec */ = {isa = PBXFileReference; lastKnownFileType = text; path = LKMessageSwitchPod.podspec; sourceTree = "<group>"; };
 		16C455B81F8F9D8D009C8984 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		16C455BD1F8F9D8D009C8984 /* LKMessageSwitchPodTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LKMessageSwitchPodTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		16C455C21F8F9D8D009C8984 /* LKMessageSwitchPodTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = LKMessageSwitchPodTests.m; sourceTree = "<group>"; };
 		16C455C41F8F9D8D009C8984 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		16C455D51F8FB5FD009C8984 /* WeChatHeader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = WeChatHeader.h; sourceTree = "<group>"; };
+		16C455D71F8FB935009C8984 /* CaptainHook.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CaptainHook.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -57,6 +57,8 @@
 		16C455A61F8F9D8D009C8984 = {
 			isa = PBXGroup;
 			children = (
+				16C455D61F8FB935009C8984 /* CaptainHook */,
+				16C455D41F8FB5FD009C8984 /* header */,
 				16C455B21F8F9D8D009C8984 /* LKMessageSwitchPod */,
 				16C455C11F8F9D8D009C8984 /* LKMessageSwitchPodTests */,
 				16C455B11F8F9D8D009C8984 /* Products */,
@@ -77,7 +79,6 @@
 			children = (
 				16C455B31F8F9D8D009C8984 /* LKMessageSwitchPod.h */,
 				16C455B41F8F9D8D009C8984 /* LKMessageSwitchPod.m */,
-				16C455B61F8F9D8D009C8984 /* LKMessageSwitchPod.podspec */,
 				16C455B81F8F9D8D009C8984 /* Info.plist */,
 			);
 			path = LKMessageSwitchPod;
@@ -90,6 +91,24 @@
 				16C455C41F8F9D8D009C8984 /* Info.plist */,
 			);
 			path = LKMessageSwitchPodTests;
+			sourceTree = "<group>";
+		};
+		16C455D41F8FB5FD009C8984 /* header */ = {
+			isa = PBXGroup;
+			children = (
+				16C455D51F8FB5FD009C8984 /* WeChatHeader.h */,
+			);
+			name = header;
+			path = LKMessageSwitchPod/header;
+			sourceTree = "<group>";
+		};
+		16C455D61F8FB935009C8984 /* CaptainHook */ = {
+			isa = PBXGroup;
+			children = (
+				16C455D71F8FB935009C8984 /* CaptainHook.h */,
+			);
+			name = CaptainHook;
+			path = LKMessageSwitchPod/CaptainHook;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -184,7 +203,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				16C455B71F8F9D8D009C8984 /* LKMessageSwitchPod.podspec in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
