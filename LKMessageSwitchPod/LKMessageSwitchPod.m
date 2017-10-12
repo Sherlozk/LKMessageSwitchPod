@@ -132,7 +132,7 @@ CHOptimizedMethod2(self, void, CMessageMgr, AsyncOnAddMsg, NSString*, msg, MsgWr
     [LKNewestMsgManager sharedInstance].content = wrap.m_nsPushContent;
     NSLog(@"%@", [LKNewestMsgManager sharedInstance].content);
     
-    if([LKNewestMsgManager sharedInstance].content != NULL){
+    if([LKNewestMsgManager sharedInstance].content != NULL && ![[LKNewestMsgManager sharedInstance].content  isEqual: @""]){
         [[NSNotificationCenter defaultCenter] postNotificationName:@"LkWechatMessageNotification" object:nil];
     }
     
