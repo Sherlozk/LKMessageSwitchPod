@@ -10,7 +10,7 @@
 
 #import "LKMessageSwitchPod.h"
 #import <UIKit/UIKit.h>
-#import "CaptainHook.h"
+#import <CaptainHook/CaptainHook.h>
 #import "WeChatHeader.h"
 
 
