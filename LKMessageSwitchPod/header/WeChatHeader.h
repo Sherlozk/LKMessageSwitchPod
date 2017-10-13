@@ -16,7 +16,7 @@
 @property(nonatomic, strong) NSString* m_nsContent;        //发送消息的内容
 @property(nonatomic, strong) NSString* m_nsToUsr;          //发送人
 @property(nonatomic, strong) NSString* m_nsFromUsr;        //接收人
-@property(nonatomic, strong) NSMutableString *m_nsPushContent; 
+@property(nonatomic, strong) NSMutableString *m_nsPushContent;
 @property(nonatomic, assign) unsigned long m_uiStatus;
 @property(nonatomic, assign) unsigned long m_uiCreateTime;
 @property(nonatomic, assign) unsigned long m_uiMessageType;
@@ -85,6 +85,12 @@
 + (UINavigationController*)getCurrentNavigationController;
 @end
 
+@interface BaseMsgContentViewController
+
+- (id)getCurrentChatName;
+
+@end
 
 
 #endif /* WeChatHeader_h */
+
