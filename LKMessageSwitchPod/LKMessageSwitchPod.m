@@ -144,11 +144,20 @@ CHOptimizedMethod0(self, void, BaseMsgContentViewController, viewDidLoad){
     //    NSLog(@"hehehehe");
     [LKNewestMsgManager sharedInstance].currentChat = [(BaseMsgContentViewController*)[[LKNewestMsgManager sharedInstance] getCurrentVC]getCurrentChatName];
     
+    NSLog(@"%@", [LKNewestMsgManager sharedInstance].currentChat);
+    
     CHSuper0(BaseMsgContentViewController, viewDidLoad);
+}
+
+CHOptimizedMethod1(self, void, BaseMsgContentViewController, viewWillDisappear, BOOL, disappear){
+    [LKNewestMsgManager sharedInstance].currentChat = NULL;
+    
+    CHSuper1(BaseMsgContentViewController, viewWillDisappear, disappear);
 }
 
 CHConstructor{
     CHLoadLateClass(BaseMsgContentViewController);
+    CHClassHook1(BaseMsgContentViewController, viewWillDisappear);
     CHClassHook0(BaseMsgContentViewController, viewDidLoad);
     
 }
@@ -179,11 +188,9 @@ CHOptimizedMethod0(self, void, MMUIViewController, viewDidLoad){
         UIViewController *VC = [[LKNewestMsgManager sharedInstance]getCurrentVC];
         NSString *currentVCClassName = [NSString stringWithUTF8String:object_getClassName([[LKNewestMsgManager sharedInstance]getCurrentVC])];
         NSString *currentChatName = [LKNewestMsgManager sharedInstance].currentChat;
-        
         //&& ![currentVCClassName isEqual:@"NSKVONotifying_BaseMsgContentViewController"]
         if (![currentVCClassName  isEqual: @"NSKVONotifying_NewMainFrameViewController"]
-            
-            && currentChatName != [LKNewestMsgManager sharedInstance].username) {
+            && ![currentChatName isEqual: [LKNewestMsgManager sharedInstance].username]) {
             
             if(self == [[LKNewestMsgManager sharedInstance]getCurrentVC]){
                 
@@ -259,3 +266,4 @@ CHConstructor{
     CHLoadLateClass(CMessageMgr);
     CHClassHook2(CMessageMgr, AsyncOnAddMsg, MsgWrap);
 }
+
