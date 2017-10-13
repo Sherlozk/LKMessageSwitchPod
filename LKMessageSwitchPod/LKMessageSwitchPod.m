@@ -179,8 +179,10 @@ CHOptimizedMethod0(self, void, MMUIViewController, viewDidLoad){
         UIViewController *VC = [[LKNewestMsgManager sharedInstance]getCurrentVC];
         NSString *currentVCClassName = [NSString stringWithUTF8String:object_getClassName([[LKNewestMsgManager sharedInstance]getCurrentVC])];
         NSString *currentChatName = [LKNewestMsgManager sharedInstance].currentChat;
+        
+        //&& ![currentVCClassName isEqual:@"NSKVONotifying_BaseMsgContentViewController"]
         if (![currentVCClassName  isEqual: @"NSKVONotifying_NewMainFrameViewController"]
-            && ![currentVCClassName isEqual:@"NSKVONotifying_BaseMsgContentViewController"]
+            
             && currentChatName != [LKNewestMsgManager sharedInstance].username) {
             
             if(self == [[LKNewestMsgManager sharedInstance]getCurrentVC]){
