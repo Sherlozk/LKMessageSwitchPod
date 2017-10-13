@@ -16,11 +16,17 @@
 
 
 
-@interface LKButton : UIButton
+@interface LKButton : UIButton<CAAnimationDelegate>
 @property(nonatomic, strong)NSMutableString *username;
+@property(nonatomic, strong)UISwipeGestureRecognizer *swipeGestureRecognizer;
 @end
 
 @implementation LKButton
+
+-(void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag{
+    NSLog(@"回调了");
+    [self removeFromSuperview];
+}
 
 @end
 
@@ -83,14 +89,14 @@
 //
 //CHOptimizedMethod2(self, BOOL, MicroMessengerAppDelegate, application, UIApplication*, application, didFinishLaunchingWithOptions, NSDictionary*, launchOptions){
 //    NSLog(@"成功 hook appDelegate!!!!!");
-
-// Usage 2: 打印在运行过程中调用了哪些方法
-//    [ANYMethodLog logMethodWithClass:NSClassFromString(@"CMessageMgr") condition:^BOOL(SEL sel) {
-//        return YES;
-//    } before:^(id target, SEL sel, NSArray *args, int deep) {
-//        NSLog(@"target:%@ sel:%@", target, NSStringFromSelector(sel));
-//    } after:nil];
-
+//
+////  Usage 2: 打印在运行过程中调用了哪些方法
+////    [ANYMethodLog logMethodWithClass:NSClassFromString(@"CMessageMgr") condition:^BOOL(SEL sel) {
+////        return YES;
+////    } before:^(id target, SEL sel, NSArray *args, int deep) {
+////        NSLog(@"target:%@ sel:%@", target, NSStringFromSelector(sel));
+////    } after:nil];
+//
 //    [ANYMethodLog logMethodWithClass:[UIViewController class] condition:^BOOL(SEL sel) {
 //        return YES;
 //    } before:^(id target, SEL sel, NSArray *args, int deep) {
@@ -98,22 +104,22 @@
 //    } after:nil];
 //
 //    // Usage 4: 打印调用方法时的参数值
-//    [ANYMethodLog logMethodWithClass:NSClassFromString(@"UIViewController") condition:^BOOL(SEL sel) {
+////    [ANYMethodLog logMethodWithClass:NSClassFromString(@"UIViewController") condition:^BOOL(SEL sel) {
+////
+////        return [NSStringFromSelector(sel) isEqualToString:@"viewWillAppear:"];
+////
+////    } before:^(id target, SEL sel, NSArray *args, int deep) {
+////
+////        NSLog(@"before target:%@ sel:%@ args:%@", target, NSStringFromSelector(sel), args);
+////
+////    } after:nil];
 //
-//        return [NSStringFromSelector(sel) isEqualToString:@"viewWillAppear:"];
+////    打印某个类所有方法
+////    [ANYMethodLog logMethodWithClass:NSClassFromString(@"MMServiceCenter") condition:^BOOL(SEL sel) {
+////        NSLog(@"method:%@", NSStringFromSelector(sel));
+////        return NO;
+////    } before:nil after:nil];
 //
-//    } before:^(id target, SEL sel, NSArray *args, int deep) {
-//
-//        NSLog(@"before target:%@ sel:%@ args:%@", target, NSStringFromSelector(sel), args);
-//
-//    } after:nil];
-
-//打印某个类所有方法
-//    [ANYMethodLog logMethodWithClass:NSClassFromString(@"MMServiceCenter") condition:^BOOL(SEL sel) {
-//        NSLog(@"method:%@", NSStringFromSelector(sel));
-//        return NO;
-//    } before:nil after:nil];
-
 //    CHSuper2(MicroMessengerAppDelegate, application, application, didFinishLaunchingWithOptions, launchOptions);
 //}
 //
@@ -138,15 +144,18 @@ CHConstructor{
     
 }
 
+
+
+//聊天基本页面
 CHDeclareClass(BaseMsgContentViewController)
 
-CHOptimizedMethod0(self, void, BaseMsgContentViewController, viewDidLoad){
+CHOptimizedMethod1(self, void, BaseMsgContentViewController, viewDidAppear, BOOL, flag){
     //    NSLog(@"hehehehe");
     [LKNewestMsgManager sharedInstance].currentChat = [(BaseMsgContentViewController*)[[LKNewestMsgManager sharedInstance] getCurrentVC]getCurrentChatName];
     
     NSLog(@"%@", [LKNewestMsgManager sharedInstance].currentChat);
     
-    CHSuper0(BaseMsgContentViewController, viewDidLoad);
+    CHSuper1(BaseMsgContentViewController, viewDidAppear, flag);
 }
 
 CHOptimizedMethod1(self, void, BaseMsgContentViewController, viewWillDisappear, BOOL, disappear){
@@ -158,7 +167,7 @@ CHOptimizedMethod1(self, void, BaseMsgContentViewController, viewWillDisappear, 
 CHConstructor{
     CHLoadLateClass(BaseMsgContentViewController);
     CHClassHook1(BaseMsgContentViewController, viewWillDisappear);
-    CHClassHook0(BaseMsgContentViewController, viewDidLoad);
+    CHClassHook1(BaseMsgContentViewController, viewDidAppear);
     
 }
 
@@ -180,14 +189,35 @@ CHDeclareMethod1(void, MMUIViewController, backToMsgContentViewController, id, s
     
 }
 
+CHDeclareMethod1(void, MMUIViewController, handleSwipes, UISwipeGestureRecognizer*, sender){
+    NSLog(@"右滑了");
+    CABasicAnimation *animation = [CABasicAnimation animationWithKeyPath:@"position"];
+    //    __weak __typeof(self)weakSelf = self;
+    animation.delegate = sender.view;
+    animation.fromValue = [NSValue valueWithCGPoint:CGPointMake(sender.view.frame.origin.x+sender.view.frame.size.width/2, sender.view.frame.origin.y+sender.view.frame.size.height/2)];
+    animation.toValue = [NSValue valueWithCGPoint:CGPointMake(sender.view.frame.origin.x+sender.view.frame.size.width*1.5+10, sender.view.frame.origin.y+sender.view.frame.size.height/2)];
+    
+    animation.duration = 0.2f;
+    animation.timingFunction = [CAMediaTimingFunction functionWithName:kCAMediaTimingFunctionEaseIn];
+    animation.fillMode = kCAFillModeForwards;
+    animation.removedOnCompletion = NO;
+    [sender.view.layer addAnimation:animation forKey:@"positionAnimation"];
+    //    [sender.view removeFromSuperview];
+    
+    
+}
+
+
+
 CHOptimizedMethod0(self, void, MMUIViewController, viewDidLoad){
     NSLog(@"成功 hook MMUIViewController!!!");
     
     [[NSNotificationCenter defaultCenter]addObserverForName:@"LkWechatMessageNotification" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note){
         NSLog(@"收到消息!!!");
-        UIViewController *VC = [[LKNewestMsgManager sharedInstance]getCurrentVC];
+        //        UIViewController *VC = [[LKNewestMsgManager sharedInstance]getCurrentVC];
         NSString *currentVCClassName = [NSString stringWithUTF8String:object_getClassName([[LKNewestMsgManager sharedInstance]getCurrentVC])];
         NSString *currentChatName = [LKNewestMsgManager sharedInstance].currentChat;
+        
         //&& ![currentVCClassName isEqual:@"NSKVONotifying_BaseMsgContentViewController"]
         if (![currentVCClassName  isEqual: @"NSKVONotifying_NewMainFrameViewController"]
             && ![currentChatName isEqual: [LKNewestMsgManager sharedInstance].username]) {
@@ -204,6 +234,13 @@ CHOptimizedMethod0(self, void, MMUIViewController, viewDidLoad){
                 btn.layer.cornerRadius = 10;
                 btn.contentEdgeInsets = UIEdgeInsetsMake(2, 2, 2, 2);
                 [btn addTarget:self action:@selector(backToMsgContentViewController:) forControlEvents:UIControlEventTouchUpInside];
+                
+                btn.swipeGestureRecognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwipes:)];
+                btn.swipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionRight;
+                btn.swipeGestureRecognizer.numberOfTouchesRequired = 1;
+                [btn addGestureRecognizer:btn.swipeGestureRecognizer];
+                
+                
                 [self.view addSubview:btn];
                 
                 
@@ -247,7 +284,7 @@ CHOptimizedMethod2(self, void, CMessageMgr, AsyncOnAddMsg, NSMutableString*, msg
     //        [LKNewestMsgManager sharedInstance].currentChat = [(BaseMsgContentViewController*)[[LKNewestMsgManager sharedInstance] getCurrentVC]getCurrentChatName];
     //    }
     
-    if(![wrap.m_nsPushContent isEqual: @""]){
+    if(![wrap.m_nsPushContent isEqual: @""] && wrap.m_nsPushContent != NULL){
         [LKNewestMsgManager sharedInstance].username = msg;
         NSLog(@"%@", [LKNewestMsgManager sharedInstance].username);
         [LKNewestMsgManager sharedInstance].content = wrap.m_nsPushContent;
@@ -266,4 +303,3 @@ CHConstructor{
     CHLoadLateClass(CMessageMgr);
     CHClassHook2(CMessageMgr, AsyncOnAddMsg, MsgWrap);
 }
-
