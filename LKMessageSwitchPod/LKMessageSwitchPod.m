@@ -247,7 +247,7 @@ CHOptimizedMethod2(self, void, CMessageMgr, AsyncOnAddMsg, NSMutableString*, msg
     //        [LKNewestMsgManager sharedInstance].currentChat = [(BaseMsgContentViewController*)[[LKNewestMsgManager sharedInstance] getCurrentVC]getCurrentChatName];
     //    }
     
-    if(![[LKNewestMsgManager sharedInstance].content isEqual: @""]){
+    if(![wrap.m_nsPushContent isEqual: @""]){
         [LKNewestMsgManager sharedInstance].username = msg;
         NSLog(@"%@", [LKNewestMsgManager sharedInstance].username);
         [LKNewestMsgManager sharedInstance].content = wrap.m_nsPushContent;
