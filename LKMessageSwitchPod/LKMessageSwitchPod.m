@@ -15,26 +15,12 @@
 
 
 
-
-@interface LKButton : UIButton<CAAnimationDelegate>
-@property(nonatomic, strong)NSMutableString *username;
-@property(nonatomic, strong)UISwipeGestureRecognizer *swipeGestureRecognizer;
-@end
-
-@implementation LKButton
-
--(void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag{
-    NSLog(@"回调了");
-    [self removeFromSuperview];
-}
-
-@end
-
 @interface LKNewestMsgManager:NSData
 @property(nonatomic, strong) NSMutableString *username;
 @property(nonatomic, strong) NSMutableString *content;
 @property(nonatomic, strong) NSMutableString *nickname;
 @property(nonatomic, strong) NSMutableString *currentChat;
+@property(nonatomic, strong) NSMutableString *didTouchBtnName;
 @property(nonatomic, strong) NSString *FromUsr;
 +(instancetype)sharedInstance;
 @end
@@ -84,6 +70,29 @@
 }
 @end
 
+
+@interface LKButton : UIButton<CAAnimationDelegate>
+@property(nonatomic, strong)NSMutableString *username;
+@property(nonatomic, strong)UISwipeGestureRecognizer *swipeGestureRecognizer;
+@end
+
+@implementation LKButton
+
+-(void)registerNotification{
+    [[NSNotificationCenter defaultCenter] addObserverForName:@"btnDidTouch" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification*note){
+        if ([self.username isEqual: [LKNewestMsgManager sharedInstance].didTouchBtnName]) {
+            [self removeFromSuperview];
+        }
+    }];
+}
+
+
+-(void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag{
+    NSLog(@"回调了");
+    [self removeFromSuperview];
+}
+
+@end
 
 //CHDeclareClass(MicroMessengerAppDelegate)
 //
@@ -180,10 +189,13 @@ CHDeclareMethod1(void, MMUIViewController, backToMsgContentViewController, id, s
     UINavigationController *navi = [objc_getClass("CAppViewControllerManager") getCurrentNavigationController];
     
     LKButton *btn = (LKButton *)sender;
-    
+    [LKNewestMsgManager sharedInstance].didTouchBtnName = btn.username;
+    [[NSNotificationCenter defaultCenter] postNotificationName:@"btnDidTouch" object:nil];
     MMServiceCenter* serviceCenter = [objc_getClass("MMServiceCenter") defaultCenter];
     CContactMgr *contactMgr = [serviceCenter getService:[objc_getClass("CContactMgr") class]];
     CContact *contact = [contactMgr getContactByName:btn.username];
+    //    CContact *contact = [contactMgr getSelfContact];
+    
     MMMsgLogicManager *logicManager = [serviceCenter getService:[objc_getClass("MMMsgLogicManager") class]];
     [logicManager PushOtherBaseMsgControllerByContact:contact navigationController:navi animated:YES];
     
@@ -234,7 +246,7 @@ CHOptimizedMethod0(self, void, MMUIViewController, viewDidLoad){
                 btn.layer.cornerRadius = 10;
                 btn.contentEdgeInsets = UIEdgeInsetsMake(2, 2, 2, 2);
                 [btn addTarget:self action:@selector(backToMsgContentViewController:) forControlEvents:UIControlEventTouchUpInside];
-                
+                [btn registerNotification];
                 btn.swipeGestureRecognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwipes:)];
                 btn.swipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionRight;
                 btn.swipeGestureRecognizer.numberOfTouchesRequired = 1;
@@ -303,3 +315,4 @@ CHConstructor{
     CHLoadLateClass(CMessageMgr);
     CHClassHook2(CMessageMgr, AsyncOnAddMsg, MsgWrap);
 }
+
