@@ -94,64 +94,64 @@
 
 @end
 
-//CHDeclareClass(MicroMessengerAppDelegate)
-//
-//CHOptimizedMethod2(self, BOOL, MicroMessengerAppDelegate, application, UIApplication*, application, didFinishLaunchingWithOptions, NSDictionary*, launchOptions){
-//    NSLog(@"成功 hook appDelegate!!!!!");
-//
-////  Usage 2: 打印在运行过程中调用了哪些方法
-////    [ANYMethodLog logMethodWithClass:NSClassFromString(@"CMessageMgr") condition:^BOOL(SEL sel) {
-////        return YES;
-////    } before:^(id target, SEL sel, NSArray *args, int deep) {
-////        NSLog(@"target:%@ sel:%@", target, NSStringFromSelector(sel));
-////    } after:nil];
-//
-//    [ANYMethodLog logMethodWithClass:[UIViewController class] condition:^BOOL(SEL sel) {
-//        return YES;
-//    } before:^(id target, SEL sel, NSArray *args, int deep) {
-//        NSLog(@"target:%@ sel:%@", target, NSStringFromSelector(sel));
-//    } after:nil];
-//
-//    // Usage 4: 打印调用方法时的参数值
-////    [ANYMethodLog logMethodWithClass:NSClassFromString(@"UIViewController") condition:^BOOL(SEL sel) {
-////
-////        return [NSStringFromSelector(sel) isEqualToString:@"viewWillAppear:"];
-////
-////    } before:^(id target, SEL sel, NSArray *args, int deep) {
-////
-////        NSLog(@"before target:%@ sel:%@ args:%@", target, NSStringFromSelector(sel), args);
-////
-////    } after:nil];
-//
-////    打印某个类所有方法
-////    [ANYMethodLog logMethodWithClass:NSClassFromString(@"MMServiceCenter") condition:^BOOL(SEL sel) {
-////        NSLog(@"method:%@", NSStringFromSelector(sel));
-////        return NO;
-////    } before:nil after:nil];
-//
-//    CHSuper2(MicroMessengerAppDelegate, application, application, didFinishLaunchingWithOptions, launchOptions);
-//}
-//
-//CHConstructor{
-//    CHLoadLateClass(MicroMessengerAppDelegate);
-//    CHClassHook2(MicroMessengerAppDelegate, application, didFinishLaunchingWithOptions);
-//}
+CHDeclareClass(MicroMessengerAppDelegate)
 
-
-CHDeclareClass(MMMsgLogicManager)
-
-CHOptimizedMethod3(self, void, MMMsgLogicManager, PushOtherBaseMsgControllerByContact, CContact*, contact, navigationController, UINavigationController*, navi, animated, BOOL, animated){
+CHOptimizedMethod2(self, BOOL, MicroMessengerAppDelegate, application, UIApplication*, application, didFinishLaunchingWithOptions, NSDictionary*, launchOptions){
+    NSLog(@"成功 hook appDelegate!!!!!");
     
-    NSLog(@"hahaha");
+    //  Usage 2: 打印在运行过程中调用了哪些方法
+    [ANYMethodLog logMethodWithClass:NSClassFromString(@"CMessageMgr") condition:^BOOL(SEL sel) {
+        return YES;
+    } before:^(id target, SEL sel, NSArray *args, int deep) {
+        NSLog(@"target:%@ sel:%@", target, NSStringFromSelector(sel));
+    } after:nil];
     
-    CHSuper3(MMMsgLogicManager, PushOtherBaseMsgControllerByContact, contact, navigationController, navi, animated, animated);
+    [ANYMethodLog logMethodWithClass:[UIViewController class] condition:^BOOL(SEL sel) {
+        return YES;
+    } before:^(id target, SEL sel, NSArray *args, int deep) {
+        NSLog(@"target:%@ sel:%@", target, NSStringFromSelector(sel));
+    } after:nil];
+    
+    // Usage 4: 打印调用方法时的参数值
+    //    [ANYMethodLog logMethodWithClass:NSClassFromString(@"UIViewController") condition:^BOOL(SEL sel) {
+    //
+    //        return [NSStringFromSelector(sel) isEqualToString:@"viewWillAppear:"];
+    //
+    //    } before:^(id target, SEL sel, NSArray *args, int deep) {
+    //
+    //        NSLog(@"before target:%@ sel:%@ args:%@", target, NSStringFromSelector(sel), args);
+    //
+    //    } after:nil];
+    
+    //    打印某个类所有方法
+    //    [ANYMethodLog logMethodWithClass:NSClassFromString(@"MMServiceCenter") condition:^BOOL(SEL sel) {
+    //        NSLog(@"method:%@", NSStringFromSelector(sel));
+    //        return NO;
+    //    } before:nil after:nil];
+    
+    CHSuper2(MicroMessengerAppDelegate, application, application, didFinishLaunchingWithOptions, launchOptions);
 }
 
 CHConstructor{
-    CHLoadLateClass(MMMsgLogicManager);
-    CHClassHook3(MMMsgLogicManager, PushOtherBaseMsgControllerByContact, navigationController, animated);
-    
+    CHLoadLateClass(MicroMessengerAppDelegate);
+    CHClassHook2(MicroMessengerAppDelegate, application, didFinishLaunchingWithOptions);
 }
+
+
+//CHDeclareClass(MMMsgLogicManager)
+//
+//CHOptimizedMethod3(self, void, MMMsgLogicManager, PushOtherBaseMsgControllerByContact, CContact*, contact, navigationController, UINavigationController*, navi, animated, BOOL, animated){
+//
+//    NSLog(@"hahaha");
+//
+//    CHSuper3(MMMsgLogicManager, PushOtherBaseMsgControllerByContact, contact, navigationController, navi, animated, animated);
+//}
+//
+//CHConstructor{
+//    CHLoadLateClass(MMMsgLogicManager);
+//    CHClassHook3(MMMsgLogicManager, PushOtherBaseMsgControllerByContact, navigationController, animated);
+//
+//}
 
 
 
@@ -224,15 +224,19 @@ CHDeclareMethod1(void, MMUIViewController, handleSwipes, UISwipeGestureRecognize
 CHOptimizedMethod0(self, void, MMUIViewController, viewDidLoad){
     NSLog(@"成功 hook MMUIViewController!!!");
     
-    [[NSNotificationCenter defaultCenter]addObserverForName:@"LkWechatMessageNotification" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note){
-        NSLog(@"收到消息!!!");
-        //        UIViewController *VC = [[LKNewestMsgManager sharedInstance]getCurrentVC];
-        NSString *currentVCClassName = [NSString stringWithUTF8String:object_getClassName([[LKNewestMsgManager sharedInstance]getCurrentVC])];
-        NSString *currentChatName = [LKNewestMsgManager sharedInstance].currentChat;
+    NSString *currentVCClassName = [NSString stringWithUTF8String:object_getClassName([[LKNewestMsgManager sharedInstance]getCurrentVC])];
+    NSString *currentChatName = [LKNewestMsgManager sharedInstance].currentChat;
+    
+    //&& ![currentVCClassName isEqual:@"NSKVONotifying_BaseMsgContentViewController"]
+    if (![currentVCClassName  isEqual: @"NSKVONotifying_NewMainFrameViewController"]
+        && ![currentChatName isEqual: [LKNewestMsgManager sharedInstance].username]
+        && ![currentVCClassName isEqual:@"NSKVONotifying_WCCommentListViewController"]
+        && ![currentVCClassName isEqual:@"NSKVONotifying_SayHelloViewController"]) { //对新好友提示页面和朋友圈评论列表页面设置通知,会导致页面不被释放,消息重复提示的bug
         
-        //&& ![currentVCClassName isEqual:@"NSKVONotifying_BaseMsgContentViewController"]
-        if (![currentVCClassName  isEqual: @"NSKVONotifying_NewMainFrameViewController"]
-            && ![currentChatName isEqual: [LKNewestMsgManager sharedInstance].username]) {
+        [[NSNotificationCenter defaultCenter]addObserverForName:@"LkWechatMessageNotification" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note){
+            NSLog(@"收到消息!!!");
+            //        UIViewController *VC = [[LKNewestMsgManager sharedInstance]getCurrentVC];
+            
             
             if(self == [[LKNewestMsgManager sharedInstance]getCurrentVC]){
                 
@@ -257,9 +261,8 @@ CHOptimizedMethod0(self, void, MMUIViewController, viewDidLoad){
                 
                 
             }
-        }
-    }];
-    
+        }];
+    }
     
     CHSuper0(MMUIViewController, viewDidLoad);
 }
@@ -315,4 +318,3 @@ CHConstructor{
     CHLoadLateClass(CMessageMgr);
     CHClassHook2(CMessageMgr, AsyncOnAddMsg, MsgWrap);
 }
-
