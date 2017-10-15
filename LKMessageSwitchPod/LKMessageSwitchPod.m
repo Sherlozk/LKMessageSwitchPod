@@ -94,48 +94,48 @@
 
 @end
 
-CHDeclareClass(MicroMessengerAppDelegate)
-
-CHOptimizedMethod2(self, BOOL, MicroMessengerAppDelegate, application, UIApplication*, application, didFinishLaunchingWithOptions, NSDictionary*, launchOptions){
-    NSLog(@"成功 hook appDelegate!!!!!");
-    
-    //  Usage 2: 打印在运行过程中调用了哪些方法
-    [ANYMethodLog logMethodWithClass:NSClassFromString(@"CMessageMgr") condition:^BOOL(SEL sel) {
-        return YES;
-    } before:^(id target, SEL sel, NSArray *args, int deep) {
-        NSLog(@"target:%@ sel:%@", target, NSStringFromSelector(sel));
-    } after:nil];
-    
-    [ANYMethodLog logMethodWithClass:[UIViewController class] condition:^BOOL(SEL sel) {
-        return YES;
-    } before:^(id target, SEL sel, NSArray *args, int deep) {
-        NSLog(@"target:%@ sel:%@", target, NSStringFromSelector(sel));
-    } after:nil];
-    
-    // Usage 4: 打印调用方法时的参数值
-    //    [ANYMethodLog logMethodWithClass:NSClassFromString(@"UIViewController") condition:^BOOL(SEL sel) {
-    //
-    //        return [NSStringFromSelector(sel) isEqualToString:@"viewWillAppear:"];
-    //
-    //    } before:^(id target, SEL sel, NSArray *args, int deep) {
-    //
-    //        NSLog(@"before target:%@ sel:%@ args:%@", target, NSStringFromSelector(sel), args);
-    //
-    //    } after:nil];
-    
-    //    打印某个类所有方法
-    //    [ANYMethodLog logMethodWithClass:NSClassFromString(@"MMServiceCenter") condition:^BOOL(SEL sel) {
-    //        NSLog(@"method:%@", NSStringFromSelector(sel));
-    //        return NO;
-    //    } before:nil after:nil];
-    
-    CHSuper2(MicroMessengerAppDelegate, application, application, didFinishLaunchingWithOptions, launchOptions);
-}
-
-CHConstructor{
-    CHLoadLateClass(MicroMessengerAppDelegate);
-    CHClassHook2(MicroMessengerAppDelegate, application, didFinishLaunchingWithOptions);
-}
+//CHDeclareClass(MicroMessengerAppDelegate)
+//
+//CHOptimizedMethod2(self, BOOL, MicroMessengerAppDelegate, application, UIApplication*, application, didFinishLaunchingWithOptions, NSDictionary*, launchOptions){
+//    NSLog(@"成功 hook appDelegate!!!!!");
+//    
+//    //  Usage 2: 打印在运行过程中调用了哪些方法
+//    [ANYMethodLog logMethodWithClass:NSClassFromString(@"CMessageMgr") condition:^BOOL(SEL sel) {
+//        return YES;
+//    } before:^(id target, SEL sel, NSArray *args, int deep) {
+//        NSLog(@"target:%@ sel:%@", target, NSStringFromSelector(sel));
+//    } after:nil];
+//    
+//    [ANYMethodLog logMethodWithClass:[UIViewController class] condition:^BOOL(SEL sel) {
+//        return YES;
+//    } before:^(id target, SEL sel, NSArray *args, int deep) {
+//        NSLog(@"target:%@ sel:%@", target, NSStringFromSelector(sel));
+//    } after:nil];
+//    
+//    // Usage 4: 打印调用方法时的参数值
+//    //    [ANYMethodLog logMethodWithClass:NSClassFromString(@"UIViewController") condition:^BOOL(SEL sel) {
+//    //
+//    //        return [NSStringFromSelector(sel) isEqualToString:@"viewWillAppear:"];
+//    //
+//    //    } before:^(id target, SEL sel, NSArray *args, int deep) {
+//    //
+//    //        NSLog(@"before target:%@ sel:%@ args:%@", target, NSStringFromSelector(sel), args);
+//    //
+//    //    } after:nil];
+//    
+//    //    打印某个类所有方法
+//    //    [ANYMethodLog logMethodWithClass:NSClassFromString(@"MMServiceCenter") condition:^BOOL(SEL sel) {
+//    //        NSLog(@"method:%@", NSStringFromSelector(sel));
+//    //        return NO;
+//    //    } before:nil after:nil];
+//    
+//    CHSuper2(MicroMessengerAppDelegate, application, application, didFinishLaunchingWithOptions, launchOptions);
+//}
+//
+//CHConstructor{
+//    CHLoadLateClass(MicroMessengerAppDelegate);
+//    CHClassHook2(MicroMessengerAppDelegate, application, didFinishLaunchingWithOptions);
+//}
 
 
 //CHDeclareClass(MMMsgLogicManager)

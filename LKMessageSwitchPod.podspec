@@ -1,6 +1,6 @@
 Pod::Spec.new do |spec|
   spec.name             = "LKMessageSwitchPod"                         #Pod的名字
-  spec.version          = "1.1.1"                                     #版本号
+  spec.version          = "1.1.2"                                     #版本号
   spec.summary          = "A WeChat pod for MonkeyDev"
   spec.description      = <<-DESC                                     #Pod的描述
                           - 在任意界面提示消息弹层,点击可以进入聊天页面,返回可以回到之前的页面
