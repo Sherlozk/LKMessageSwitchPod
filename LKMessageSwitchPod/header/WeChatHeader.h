@@ -59,6 +59,7 @@
 @interface MMUIViewController : UIViewController
 
 @property(nonatomic, strong) UIView *view;
+@property (nonatomic, retain) id observer;
 //@property(nonatomic ,strong) UIButton *btn;
 
 //- (void)popViewControllerAnimated:(BOOL)animated;
@@ -78,6 +79,8 @@
 @interface CContactMgr
 
 -(CContact*)getContactByName:(NSString*)name;
+- (BOOL)setContact:(CContact*)contact nickName:(NSString*)nickName;
+- (CContact*)getSelfContact;
 @end
 
 @interface CAppViewControllerManager
@@ -92,5 +95,5 @@
 @end
 
 
-#endif /* WeChatHeader_h */
 
+#endif /* WeChatHeader_h */

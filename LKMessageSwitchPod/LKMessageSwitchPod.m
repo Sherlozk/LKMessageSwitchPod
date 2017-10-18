@@ -42,6 +42,8 @@
     
 }
 
+
+//获取当前显示的VC
 - (UIViewController *)getCurrentVC{
     //获取默认window
     UIWindow *window = [[UIApplication sharedApplication] keyWindow];
@@ -88,7 +90,7 @@
 
 
 -(void)animationDidStop:(CAAnimation *)anim finished:(BOOL)flag{
-    NSLog(@"回调了");
+    NSLog(@"回调了,从父页面移除");
     [self removeFromSuperview];
 }
 
@@ -138,22 +140,6 @@ CHConstructor{
 }
 
 
-//CHDeclareClass(MMMsgLogicManager)
-//
-//CHOptimizedMethod3(self, void, MMMsgLogicManager, PushOtherBaseMsgControllerByContact, CContact*, contact, navigationController, UINavigationController*, navi, animated, BOOL, animated){
-//
-//    NSLog(@"hahaha");
-//
-//    CHSuper3(MMMsgLogicManager, PushOtherBaseMsgControllerByContact, contact, navigationController, navi, animated, animated);
-//}
-//
-//CHConstructor{
-//    CHLoadLateClass(MMMsgLogicManager);
-//    CHClassHook3(MMMsgLogicManager, PushOtherBaseMsgControllerByContact, navigationController, animated);
-//
-//}
-
-
 
 //聊天基本页面
 CHDeclareClass(BaseMsgContentViewController)
@@ -179,6 +165,8 @@ CHConstructor{
     CHClassHook1(BaseMsgContentViewController, viewDidAppear);
     
 }
+
+
 
 // hook MMUIViewController基类
 
@@ -219,56 +207,78 @@ CHDeclareMethod1(void, MMUIViewController, handleSwipes, UISwipeGestureRecognize
     
 }
 
-
-
-CHOptimizedMethod0(self, void, MMUIViewController, viewDidLoad){
-    NSLog(@"成功 hook MMUIViewController!!!");
+CHDeclareMethod0(void, MMUIViewController, messageCallBack){
+    NSLog(@"收到消息!!!");
+    //        UIViewController *VC = [[LKNewestMsgManager sharedInstance]getCurrentVC];
     
+    NSString *currentChatName = [LKNewestMsgManager sharedInstance].currentChat;
+    if(self == [[LKNewestMsgManager sharedInstance]getCurrentVC] && ![currentChatName isEqual: [LKNewestMsgManager sharedInstance].username]){
+        
+        LKButton *btn = [LKButton buttonWithType:UIButtonTypeRoundedRect];
+        btn.frame = CGRectMake(self.view.frame.size.width-100-2, 74, 100, 40);
+        btn.backgroundColor = [[UIColor blackColor]colorWithAlphaComponent:0.8];
+        btn.tintColor = [UIColor whiteColor];
+        [btn setTitle:[LKNewestMsgManager sharedInstance].content forState:UIControlStateNormal];\
+        btn.username = [LKNewestMsgManager sharedInstance].username;
+        btn.clipsToBounds = YES;
+        btn.layer.cornerRadius = 10;
+        btn.contentEdgeInsets = UIEdgeInsetsMake(2, 2, 2, 2);
+        [btn addTarget:self action:@selector(backToMsgContentViewController:) forControlEvents:UIControlEventTouchUpInside];
+        [btn registerNotification];
+        btn.swipeGestureRecognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwipes:)];
+        btn.swipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionRight;
+        btn.swipeGestureRecognizer.numberOfTouchesRequired = 1;
+        [btn addGestureRecognizer:btn.swipeGestureRecognizer];
+        
+        [self.view addSubview:btn];
+    }
+}
+
+
+CHOptimizedMethod1(self, void, MMUIViewController, viewWillAppear, BOOL, flag){
+    
+    NSLog(@"出现了!!!");
     NSString *currentVCClassName = [NSString stringWithUTF8String:object_getClassName([[LKNewestMsgManager sharedInstance]getCurrentVC])];
     
     //&& ![currentVCClassName isEqual:@"NSKVONotifying_BaseMsgContentViewController"]
+    //![currentVCClassName  isEqual: @"NSKVONotifying_NewMainFrameViewController"] &&
     if (![currentVCClassName  isEqual: @"NSKVONotifying_NewMainFrameViewController"]
-        && ![currentVCClassName isEqual:@"NSKVONotifying_WCCommentListViewController"]
+        &&![currentVCClassName isEqual:@"NSKVONotifying_WCCommentListViewController"]
         && ![currentVCClassName isEqual:@"NSKVONotifying_SayHelloViewController"]) { //对新好友提示页面和朋友圈评论列表页面设置通知,会导致页面不被释放,消息重复提示的bug
+        [[NSNotificationCenter defaultCenter]addObserver:self selector:@selector(messageCallBack) name:@"LkWechatMessageNotification" object:nil];
         
-        [[NSNotificationCenter defaultCenter]addObserverForName:@"LkWechatMessageNotification" object:nil queue:[NSOperationQueue mainQueue] usingBlock:^(NSNotification *note){
-            NSLog(@"收到消息!!!");
-            //        UIViewController *VC = [[LKNewestMsgManager sharedInstance]getCurrentVC];
-            
-            NSString *currentChatName = [LKNewestMsgManager sharedInstance].currentChat;
-            if(self == [[LKNewestMsgManager sharedInstance]getCurrentVC] && ![currentChatName isEqual: [LKNewestMsgManager sharedInstance].username]){
-                
-                LKButton *btn = [LKButton buttonWithType:UIButtonTypeRoundedRect];
-                btn.frame = CGRectMake(self.view.frame.size.width-100-2, 74, 100, 40);
-                btn.backgroundColor = [[UIColor blackColor]colorWithAlphaComponent:0.8];
-                btn.tintColor = [UIColor whiteColor];
-                [btn setTitle:[LKNewestMsgManager sharedInstance].content forState:UIControlStateNormal];\
-                btn.username = [LKNewestMsgManager sharedInstance].username;
-                btn.clipsToBounds = YES;
-                btn.layer.cornerRadius = 10;
-                btn.contentEdgeInsets = UIEdgeInsetsMake(2, 2, 2, 2);
-                [btn addTarget:self action:@selector(backToMsgContentViewController:) forControlEvents:UIControlEventTouchUpInside];
-                [btn registerNotification];
-                btn.swipeGestureRecognizer = [[UISwipeGestureRecognizer alloc]initWithTarget:self action:@selector(handleSwipes:)];
-                btn.swipeGestureRecognizer.direction = UISwipeGestureRecognizerDirectionRight;
-                btn.swipeGestureRecognizer.numberOfTouchesRequired = 1;
-                [btn addGestureRecognizer:btn.swipeGestureRecognizer];
-                
-                
-                [self.view addSubview:btn];
-                
-                
-            }
-        }];
     }
+    CHSuper1(MMUIViewController, viewWillAppear, flag);
+}
+
+CHOptimizedMethod1(self, void, MMUIViewController, viewWillDisappear, BOOL, flag){
     
+    NSLog(@"消失了!!!移除监听");
+    NSString *currentVCClassName = [NSString stringWithUTF8String:object_getClassName([[LKNewestMsgManager sharedInstance]getCurrentVC])];
+    
+    //&& ![currentVCClassName isEqual:@"NSKVONotifying_BaseMsgContentViewController"]
+    //![currentVCClassName  isEqual: @"NSKVONotifying_NewMainFrameViewController"] &&
+    if (![currentVCClassName  isEqual: @"NSKVONotifying_NewMainFrameViewController"]
+        &&![currentVCClassName isEqual:@"NSKVONotifying_WCCommentListViewController"]
+        && ![currentVCClassName isEqual:@"NSKVONotifying_SayHelloViewController"]) {
+        [[NSNotificationCenter defaultCenter]removeObserver:self name:@"LkWechatMessageNotification" object:nil];
+    }
+    CHSuper1(MMUIViewController, viewWillDisappear, flag);
+}
+
+CHOptimizedMethod0(self, void, MMUIViewController, viewDidLoad){
+    NSLog(@"成功 hook MMUIViewController!!!");
     CHSuper0(MMUIViewController, viewDidLoad);
 }
 
 CHConstructor{
     CHLoadLateClass(MMUIViewController);
     CHClassHook0(MMUIViewController, viewDidLoad );
+    CHClassHook1(MMUIViewController, viewWillAppear);
+    CHClassHook1(MMUIViewController, viewWillDisappear);
 }
+
+
 
 
 
@@ -278,24 +288,6 @@ CHDeclareClass(CMessageMgr)
 
 CHOptimizedMethod2(self, void, CMessageMgr, AsyncOnAddMsg, NSMutableString*, msg, MsgWrap, CMessageWrap*, wrap){
     
-    //    UINavigationController *navi = [objc_getClass("CAppViewControllerManager") getCurrentNavigationController];
-    //    NSLog(@"%@",navi.navigationItem.title);
-    //    BaseMsgContentViewController *VC = (BaseMsgContentViewController*)[[LKNewestMsgManager sharedInstance]getCurrentVC];
-    //    NSLog(@"%@", [VC getCurrentChatName]);
-    
-    
-    
-    //    NSLog(@"%@", [LKNewestMsgManager sharedInstance].username);
-    //    if([LKNewestMsgManager sharedInstance].username == NULL){
-    //        [LKNewestMsgManager sharedInstance].username = msg;
-    ////        NSLog(@"%@", [LKNewestMsgManager sharedInstance].content);
-    //    }
-    //    if([LKNewestMsgManager sharedInstance].content == NULL){
-    //        [LKNewestMsgManager sharedInstance].content = wrap.m_nsPushContent;
-    //    }
-    //    if([LKNewestMsgManager sharedInstance].currentChat == NULL){
-    //        [LKNewestMsgManager sharedInstance].currentChat = [(BaseMsgContentViewController*)[[LKNewestMsgManager sharedInstance] getCurrentVC]getCurrentChatName];
-    //    }
     
     if(![wrap.m_nsPushContent isEqual: @""] && wrap.m_nsPushContent != NULL){
         [LKNewestMsgManager sharedInstance].username = msg;
@@ -312,8 +304,8 @@ CHOptimizedMethod2(self, void, CMessageMgr, AsyncOnAddMsg, NSMutableString*, msg
     
 }
 
+
 CHConstructor{
     CHLoadLateClass(CMessageMgr);
     CHClassHook2(CMessageMgr, AsyncOnAddMsg, MsgWrap);
 }
-
