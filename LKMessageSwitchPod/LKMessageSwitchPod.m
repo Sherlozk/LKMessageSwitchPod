@@ -131,7 +131,7 @@ CHOptimizedMethod2(self, BOOL, MicroMessengerAppDelegate, application, UIApplica
     //        return NO;
     //    } before:nil after:nil];
     
-    CHSuper2(MicroMessengerAppDelegate, application, application, didFinishLaunchingWithOptions, launchOptions);
+    return CHSuper2(MicroMessengerAppDelegate, application, application, didFinishLaunchingWithOptions, launchOptions);
 }
 
 CHConstructor{
